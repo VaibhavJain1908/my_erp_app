@@ -3,7 +3,7 @@ from models import app, db, Inventory, Sales, Employee, Supplier, SupportTicket,
 from datetime import datetime
 
 # Product Stages
-STAGES = ["Store", "Pedding", "Printing", "Steaming", "Washing", "Checking", "Dispatch"]
+STAGES = ["Store", "Pedding", "Printing", "Steaming", "Washing", "Checking", "Dispatched"]
 
 @app.route('/')
 def index():
@@ -42,7 +42,7 @@ def update_stage(product_id):
             db.session.delete(current_stage_entry)
 
         # If moved to "Delivered", update inventory quantity
-        if next_stage == "Delivered":
+        if next_stage == "Dispatched":
             product.quantity -= move_quantity
 
         try:
