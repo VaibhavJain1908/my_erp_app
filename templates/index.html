@@ -35,7 +35,7 @@
                             <td>{{ stage }}</td>
                             <td>{{ stage_entry.quantity if stage_entry else 0 }}</td>
                             <td>
-                                {% if stage != 'Delivered' and stage_entry and stage_entry.quantity > 0 %}
+                                {% if stage != 'Dispatched' and stage_entry and stage_entry.quantity > 0 %}
                                 <form action="{{ url_for('update_stage', product_id=product.id) }}" method="post" style="display:inline;">
                                     <input type="hidden" name="current_stage" value="{{ stage }}">
                                     <input type="number" name="move_quantity" min="1" max="{{ stage_entry.quantity }}" required>
