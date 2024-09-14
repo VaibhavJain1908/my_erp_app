@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}HR Management{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>HR Management</h1>
+
+    <!-- Add Employee Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            Add New Employee
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('add_employee') }}" method="post">
+                <div class="mb-3">
+                    <label for="employeeName" class="form-label">Employee Name</label>
+                    <input type="text" class="form-control" id="employeeName" name="employeeName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="employeePosition" class="form-label">Position</label>
+                    <input type="text" class="form-control" id="employeePosition" name="employeePosition" required>
+                </div>
+                <div class="mb-3">
+                    <label for="employeeSalary" class="form-label">Salary</label>
+                    <input type="number" step="0.01" class="form-control" id="employeeSalary" name="employeeSalary" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Employee</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Employees Table -->
+    <div class="card">
+        <div class="card-header">
+            Employee Records
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Employee Name</th>
+                        <th scope="col">Position</th>
+                        <th scope="col">Salary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in records %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ employee.employee_name }}</td>
+                        <td>{{ employee.position }}</td>
+                        <td>${{ employee.salary }}</td>
+                        <td>
+                            <form action="{{ url_for('delete_employee', id=employee.id) }}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">No employees found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

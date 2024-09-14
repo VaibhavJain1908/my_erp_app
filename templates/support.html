@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Support{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Customer Support</h1>
+
+    <!-- Add Support Ticket Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            Create New Support Ticket
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('add_support_ticket') }}" method="post">
+                <div class="mb-3">
+                    <label for="ticketTitle" class="form-label">Ticket Title</label>
+                    <input type="text" class="form-control" id="ticketTitle" name="ticketTitle" required>
+                </div>
+                <div class="mb-3">
+                    <label for="ticketDescription" class="form-label">Description</label>
+                    <textarea class="form-control" id="ticketDescription" name="ticketDescription" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="ticketPriority" class="form-label">Priority</label>
+                    <select class="form-select" id="ticketPriority" name="ticketPriority" required>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Ticket</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Support Tickets Table -->
+    <div class="card">
+        <div class="card-header">
+            Active Support Tickets
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Ticket Title</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Priority</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in tickets %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ ticket.title }}</td>
+                        <td>{{ ticket.description }}</td>
+                        <td>{{ ticket.priority }}</td>
+                        <td>{{ ticket.status }}</td>
+                        <td>
+                            <form action="{{ url_for('delete_support_ticket', id=ticket.id) }}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center">No support tickets found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory Management{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Inventory Management</h1>
+
+    <!-- Add Inventory Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            Add New Inventory Item
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('add_inventory') }}" method="post">
+                <div class="mb-3">
+                    <label for="itemName" class="form-label">Item Name</label>
+                    <input type="text" class="form-control" id="itemName" name="itemName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="itemQuantity" class="form-label">Quantity</label>
+                    <input type="number" class="form-control" id="itemQuantity" name="itemQuantity" required>
+                </div>
+                <div class="mb-3">
+                    <label for="itemPrice" class="form-label">Price</label>
+                    <input type="number" step="0.01" class="form-control" id="itemPrice" name="itemPrice" required>
+                </div>
+                <div class="mb-3">
+                    <label for="supplierId" class="form-label">Supplier ID (Optional)</label>
+                    <input type="number" class="form-control" id="supplierId" name="supplierId">
+                </div>
+                <button type="submit" class="btn btn-primary">Add Item</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Inventory Table -->
+    <div class="card">
+        <div class="card-header">
+            Current Inventory
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Item Name</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Supplier</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ item.item_name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.price }}</td>
+                        <td>
+                            {% if item.supplier %}
+                                {{ item.supplier.supplier_name }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form action="{{ url_for('delete_inventory', id=item.id) }}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center">No items found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}ERP Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mt-5">
+    <!-- Inventory Management -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <img src="{{ url_for('static', filename='inventory.jpg') }}" class="card-img-top" alt="Inventory">
+            <div class="card-body">
+                <h5 class="card-title">Inventory Management</h5>
+                <p class="card-text">Manage stock levels, suppliers, and product orders efficiently.</p>
+                <a href="/inventory" class="btn btn-primary">Go to Inventory</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales Overview -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <img src="{{ url_for('static', filename='sales.jpg') }}" class="card-img-top" alt="Sales">
+            <div class="card-body">
+                <h5 class="card-title">Sales Overview</h5>
+                <p class="card-text">Track sales data, monitor performance, and analyze trends.</p>
+                <a href="/sales" class="btn btn-primary">Go to Sales</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HR Management -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <img src="{{ url_for('static', filename='hr.jpg') }}" class="card-img-top" alt="HR">
+            <div class="card-body">
+                <h5 class="card-title">HR Management</h5>
+                <p class="card-text">Manage employee data, attendance, and payroll effectively.</p>
+                <a href="/employees" class="btn btn-primary">Go to HR</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <!-- Supplier Management -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <img src="{{ url_for('static', filename='suppliers.jpg') }}" class="card-img-top" alt="Suppliers">
+            <div class="card-body">
+                <h5 class="card-title">Supplier Management</h5>
+                <p class="card-text">Manage relationships and orders with your suppliers.</p>
+                <a href="/suppliers" class="btn btn-primary">Go to Suppliers</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Support -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <img src="{{ url_for('static', filename='support.jpg') }}" class="card-img-top" alt="Support">
+            <div class="card-body">
+                <h5 class="card-title">Customer Support</h5>
+                <p class="card-text">Manage customer support tickets and resolve issues.</p>
+                <a href="/support" class="btn btn-primary">Go to Support</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

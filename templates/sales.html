@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Sales Overview{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Sales Overview</h1>
+
+    <!-- Add Sale Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            Record New Sale
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('add_sales') }}" method="post">
+                <div class="mb-3">
+                    <label for="productName" class="form-label">Product Name</label>
+                    <input type="text" class="form-control" id="productName" name="productName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="saleQuantity" class="form-label">Quantity Sold</label>
+                    <input type="number" class="form-control" id="saleQuantity" name="saleQuantity" required>
+                </div>
+                <div class="mb-3">
+                    <label for="salePrice" class="form-label">Sale Price</label>
+                    <input type="number" step="0.01" class="form-control" id="salePrice" name="salePrice" required>
+                </div>
+                <div class="mb-3">
+                    <label for="saleDate" class="form-label">Sale Date</label>
+                    <input type="date" class="form-control" id="saleDate" name="saleDate" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Record Sale</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sales Table -->
+    <div class="card">
+        <div class="card-header">
+            Recent Sales
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Product Name</th>
+                        <th scope="col">Quantity Sold</th>
+                        <th scope="col">Sale Price</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Sale Date</th> <!-- Added Sale Date column -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in records %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ sale.item_name }}</td>
+                        <td>{{ sale.quantity }}</td>
+                        <td>${{ sale.total_price }}</td>
+                        <td>${{ sale.quantity * sale.total_price }}</td>
+                        <td>{{ sale.sale_date.strftime('%Y-%m-%d') }}</td> <!-- Display Sale Date -->
+                        <td>
+                            <form action="{{ url_for('delete_sales', id=sale.id) }}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">No sales found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
