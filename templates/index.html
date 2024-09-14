@@ -5,52 +5,56 @@
 {% block content %}
 <div class="container mt-5">
     <h1>Product Workflow Dashboard</h1>
-
-    <!-- Loop through each product -->
-    {% for product in products %}
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5>{{ product.item_name }}</h5>
-            <p>Inventory Quantity: {{ product.quantity }}</p>
-            <p>Style Number: {{ product.style_number }}</p>
-            <p>Party Name: {{ product.party_name }}</p>
-        </div>
-        <div class="card-body">
-            <!-- Table for Stages -->
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Stage Name</th>
-                        <th scope="col">Quantity at Stage</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Loop through each stage for the current product -->
-                    {% for stage in STAGES %}
-                        {% set stage_entry = product.stages | selectattr('stage', 'equalto', stage) | first %}
+    </br></br>
+    <!-- Container for the product cards -->
+    <div class="card-container">
+        <!-- Loop through each product -->
+        {% for product in products %}
+        <div class="card mb-4 product-card">
+            <div class="card-header">
+                <h5>{{ product.item_name }}</h5>
+                <p>Inventory Quantity: {{ product.quantity }}</p>
+                <p>Style Number: {{ product.style_number }}</p>
+                <p>Party Name: {{ product.party_name }}</p>
+                <p>Dispatched Quantity: {{ product.stages | selectattr('stage', 'equalto', 'Dispatched') | map(attribute='quantity') | sum }}</p>
+            </div>
+            <div class="card-body hidden-content">
+                <!-- Table for Stages -->
+                <table class="table table-striped">
+                    <thead>
                         <tr>
-                            <td>{{ loop.index }}</td>
-                            <td>{{ stage }}</td>
-                            <td>{{ stage_entry.quantity if stage_entry else 0 }}</td>
-                            <td>
-                                {% if stage != 'Dispatched' and stage_entry and stage_entry.quantity > 0 %}
-                                <form action="{{ url_for('update_stage', product_id=product.id) }}" method="post" style="display:inline;">
-                                    <input type="hidden" name="current_stage" value="{{ stage }}">
-                                    <input type="number" name="move_quantity" min="1" max="{{ stage_entry.quantity }}" required>
-                                    <button type="submit" class="btn btn-info btn-sm">Move to Next Stage</button>
-                                </form>
-                                {% else %}
-                                <button class="btn btn-secondary btn-sm" disabled>Not Available</button>
-                                {% endif %}
-                            </td>
+                            <th scope="col">#</th>
+                            <th scope="col">Stage Name</th>
+                            <th scope="col">Quantity at Stage</th>
+                            <th scope="col">Actions</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <!-- Loop through each stage for the current product -->
+                        {% for stage in STAGES %}
+                            {% set stage_entry = product.stages | selectattr('stage', 'equalto', stage) | first %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ stage }}</td>
+                                <td>{{ stage_entry.quantity if stage_entry else 0 }}</td>
+                                <td>
+                                    {% if stage != 'Dispatched' and stage_entry and stage_entry.quantity > 0 %}
+                                    <form action="{{ url_for('update_stage', product_id=product.id) }}" method="post" style="display:inline;">
+                                        <input type="hidden" name="current_stage" value="{{ stage }}">
+                                        <input type="number" name="move_quantity" min="1" max="{{ stage_entry.quantity }}" required>
+                                        <button type="submit" class="btn btn-info btn-sm">Move to Next Stage</button>
+                                    </form>
+                                    {% else %}
+                                    <button class="btn btn-secondary btn-sm" disabled>Not Available</button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>
 {% endblock %}
