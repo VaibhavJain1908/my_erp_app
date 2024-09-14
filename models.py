@@ -9,10 +9,24 @@ db = SQLAlchemy(app)
 class Inventory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     item_name = db.Column(db.String(255), nullable=False)
+    party_name = db.Column(db.String(255), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-    price = db.Column(db.Float, nullable=False)
+    style_number = db.Column(db.Float, nullable=False)
     supplier_id = db.Column(db.Integer, db.ForeignKey('supplier.id'), nullable=True)
     supplier = db.relationship('Supplier', back_populates='inventory')
+
+class ProductStage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('inventory.id'), nullable=False)
+    stage = db.Column(db.String(50), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+
+    product = db.relationship('Inventory', backref='stages')
+
+    def __init__(self, product_id, stage, quantity):
+        self.product_id = product_id
+        self.stage = stage
+        self.quantity = quantity
 
 class Sales(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -1,10 +1,57 @@
 from flask import Flask, render_template, request, redirect, url_for
-from models import app, db, Inventory, Sales, Employee, Supplier, SupportTicket
+from models import app, db, Inventory, Sales, Employee, Supplier, SupportTicket, ProductStage
 from datetime import datetime
+
+# Product Stages
+STAGES = ["Store", "Pedding", "Printing", "Steaming", "Washing", "Checking", "Dispatch"]
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    products = Inventory.query.all()
+    product_stages = ProductStage.query.all()
+    return render_template('index.html', products=products, product_stages=product_stages, STAGES=STAGES)
+
+# Route to update product stage with quantity
+@app.route('/inventory/update_stage/<int:product_id>', methods=['POST'])
+def update_stage(product_id):
+    product = Inventory.query.get_or_404(product_id)
+    move_quantity = int(request.form.get('move_quantity'))  # Quantity to move
+    current_stage = request.form.get('current_stage')
+
+    # Check if there's enough quantity in the current stage
+    current_stage_entry = ProductStage.query.filter_by(product_id=product.id, stage=current_stage).first()
+    if not current_stage_entry or current_stage_entry.quantity < move_quantity:
+        return "Not enough quantity in current stage to move.", 400
+
+    # Move to the next stage
+    current_index = STAGES.index(current_stage)
+    if current_index < len(STAGES) - 1:
+        next_stage = STAGES[current_index + 1]
+
+        # Update or create entry in the next stage
+        next_stage_entry = ProductStage.query.filter_by(product_id=product.id, stage=next_stage).first()
+        if next_stage_entry:
+            next_stage_entry.quantity += move_quantity
+        else:
+            new_stage = ProductStage(product_id=product.id, stage=next_stage, quantity=move_quantity)
+            db.session.add(new_stage)
+
+        # Subtract from the current stage
+        current_stage_entry.quantity -= move_quantity
+        if current_stage_entry.quantity == 0:
+            db.session.delete(current_stage_entry)
+
+        # If moved to "Delivered", update inventory quantity
+        if next_stage == "Delivered":
+            product.quantity -= move_quantity
+
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
+            return "Error moving product to the next stage.", 500
+
+    return redirect(url_for('index'))
 
 @app.route('/inventory')
 def inventory():
@@ -15,14 +62,24 @@ def inventory():
 def add_inventory():
     item_name = request.form.get('itemName')
     quantity = request.form.get('itemQuantity')
-    price = request.form.get('itemPrice')
-    supplier_id = request.form.get('supplierId')  # Assuming supplier_id is optional
+    style_number = request.form.get('styleNumber')
+    party_name = request.form.get('partyName')
     
-    if item_name and quantity and price:
+    if item_name and quantity and style_number and party_name:
         quantity = int(quantity)
-        price = float(price)
-        new_item = Inventory(item_name=item_name, quantity=quantity, price=price, supplier_id=supplier_id)
+        style_number = float(style_number)
+        new_item = Inventory(item_name=item_name, quantity=quantity, style_number=style_number, party_name=party_name)
         db.session.add(new_item)
+        db.session.commit()  # Commit the new item first to get its ID
+
+        # Initialize product stages with 0 quantity
+        for stage in STAGES:
+            if stage == STAGES[0]:
+                new_stage = ProductStage(product_id=new_item.id, stage=stage, quantity=new_item.quantity)
+            else:
+                new_stage = ProductStage(product_id=new_item.id, stage=stage, quantity=0)
+            db.session.add(new_stage)
+
         try:
             db.session.commit()
             return redirect(url_for('inventory'))
@@ -133,7 +190,14 @@ def add_support_ticket():
 def delete_inventory(id):
     item = Inventory.query.get(id)
     if item:
+        # Delete all stages associated with the product
+        stages = ProductStage.query.filter_by(product_id=id).all()
+        for stage in stages:
+            db.session.delete(stage)
+
+        # Delete the inventory item itself
         db.session.delete(item)
+
         try:
             db.session.commit()
             return redirect(url_for('inventory'))

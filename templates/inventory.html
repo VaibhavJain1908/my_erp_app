@@ -22,12 +22,12 @@
                     <input type="number" class="form-control" id="itemQuantity" name="itemQuantity" required>
                 </div>
                 <div class="mb-3">
-                    <label for="itemPrice" class="form-label">Price</label>
-                    <input type="number" step="0.01" class="form-control" id="itemPrice" name="itemPrice" required>
+                    <label for="styleNumber" class="form-label">Style Number</label>
+                    <input type="number" step="0.01" class="form-control" id="styleNumber" name="styleNumber" required>
                 </div>
                 <div class="mb-3">
-                    <label for="supplierId" class="form-label">Supplier ID (Optional)</label>
-                    <input type="number" class="form-control" id="supplierId" name="supplierId">
+                    <label for="partyName" class="form-label">Party Name</label>
+                    <input type="text" class="form-control" id="partyName" name="partyName">
                 </div>
                 <button type="submit" class="btn btn-primary">Add Item</button>
             </form>
@@ -46,8 +46,8 @@
                         <th scope="col">#</th>
                         <th scope="col">Item Name</th>
                         <th scope="col">Quantity</th>
-                        <th scope="col">Price</th>
-                        <th scope="col">Supplier</th>
+                        <th scope="col">Style Number</th>
+                        <th scope="col">Party Name</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -56,14 +56,8 @@
                         <th scope="row">{{ loop.index }}</th>
                         <td>{{ item.item_name }}</td>
                         <td>{{ item.quantity }}</td>
-                        <td>${{ item.price }}</td>
-                        <td>
-                            {% if item.supplier %}
-                                {{ item.supplier.supplier_name }}
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
+                        <td>{{ item.style_number }}</td>
+                        <td>{{ item.party_name }}</td>
                         <td>
                             <form action="{{ url_for('delete_inventory', id=item.id) }}" method="post" style="display:inline;">
                                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
