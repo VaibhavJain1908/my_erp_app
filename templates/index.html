@@ -45,7 +45,7 @@
                                         <button type="submit" class="btn btn-info btn-sm">Move to Next Stage</button>
                                     </form>
                                     {% else %}
-                                    <button class="btn btn-secondary btn-sm" disabled>Not Available</button>
+                                    <button class="btn btn-secondary btn-sm" disabled>{{ 'Not Available' if stage != 'Dispatched' else 'Dispatched' }}</button>
                                     {% endif %}
                                 </td>
                             </tr>
